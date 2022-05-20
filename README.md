@@ -3,9 +3,18 @@
 ## How I setup the project
 
 ```sh
+# Generate project
 npx create-next-app@latest optimizely-nextjs-csr
 cd optimizely-nextjs-csr
+
+# Install dependencies for styling
 npm install bootstrap react-bootstrap
+
+# Install dependencies for HTTP requests
+npm install axios react-query
+
+# Install dependencies for currency formatting
+npm install react-currency-format
 ```
 
 ## How to use the project
