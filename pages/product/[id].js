@@ -10,6 +10,11 @@ const queryClient = new QueryClient();
 const locale = { locale: 'nl-NL' };
 
 const getProduct = async (id) => {
+  // If no ID is specified, return a Promise that will keep loading
+  if (id === undefined) {
+    return new Promise(() => {})
+  }
+
   const { data } = await axios.get(`https://dummyjson.com/products/${id}`);
   return data;
 }

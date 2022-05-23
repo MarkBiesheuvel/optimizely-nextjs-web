@@ -2,18 +2,18 @@ import axios from 'axios';
 import currencyFormatter from 'currency-formatter';
 import Head from 'next/head';
 import { useState } from 'react';
-import { Container, Spinner, Alert, Row, Col, Card } from 'react-bootstrap';
+import { Container, FormControl, Spinner, Alert, Row, Col, Card } from 'react-bootstrap';
 import { QueryClient, QueryClientProvider, useQuery } from 'react-query';
 
 const queryClient = new QueryClient();
 const locale = { locale: 'nl-NL' };
 
-const getProducts = async () => {
-  const { data } = await axios.get('https://dummyjson.com/products');
+const searchProducts = async (query) => {
+  const { data } = await axios.get(`https://dummyjson.com/products/search?q=${query}`);
   return data.products;
 }
 
-const ProductCard = ({product}) => {
+const ProductCard = ({ product }) => {
   const { id, title, price, description, thumbnail } = product;
 
   return (
@@ -33,9 +33,8 @@ const ProductCard = ({product}) => {
   )
 }
 
-const ProductLoader = () => {
-  const [query, setQuery] = useState('Samsung');
-  const { isLoading, error, data } = useQuery('products', getProducts);
+const ProductLoader = ({ query }) => {
+  const { isLoading, error, data } = useQuery(['products', query], () => searchProducts(query));
 
   if (isLoading) {
     return (
@@ -69,6 +68,8 @@ const ProductLoader = () => {
 }
 
 const Page = () => {
+  const [query, setQuery] = useState('');
+
   return (
     <div>
       <Head>
@@ -77,8 +78,18 @@ const Page = () => {
       </Head>
       <Container>
         <h1>Products</h1>
+        <Row>
+          <Col xs={4} className="mb-3">
+            <FormControl
+              placeholder="Search"
+              aria-label="Search"
+              value={query}
+              onChange={(evt) => setQuery(evt.target.value)}
+            />
+          </Col>
+        </Row>
         <QueryClientProvider client={queryClient}>
-          <ProductLoader />
+          <ProductLoader query={query} />
         </QueryClientProvider>
       </Container>
     </div>
