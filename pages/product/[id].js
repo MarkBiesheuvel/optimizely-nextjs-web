@@ -1,10 +1,11 @@
 import axios from 'axios';
 import currencyFormatter from 'currency-formatter';
-import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { Container, Spinner, Alert, Row, Col, Image } from 'react-bootstrap';
+import { Row, Col, Image } from 'react-bootstrap';
 import { QueryClient, QueryClientProvider, useQuery } from 'react-query';
+import Error from '../../components/error'
+import Loader from '../../components/loader'
 
 const queryClient = new QueryClient();
 const locale = { locale: 'nl-NL' };
@@ -26,17 +27,13 @@ const ProductLoader = () => {
 
   if (isLoading) {
     return (
-      <Spinner animation="border" role="status">
-        <span className="visually-hidden">Loading...</span>
-      </Spinner>
+      <Loader />
     )
   }
 
   if (error) {
     return (
-      <Alert variant="danger">
-        An error has occurred: {error.message}
-      </Alert>
+      <Error message={error.message} />
     )
   }
 
@@ -65,17 +62,11 @@ const ProductLoader = () => {
 
 const Page = () => {
   return (
-    <div>
-      <Head>
-        <title>Optimizely Next.js Sandbox</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <Container>
-        <QueryClientProvider client={queryClient}>
-          <ProductLoader />
-        </QueryClientProvider>
-      </Container>
-    </div>
+    <>
+      <QueryClientProvider client={queryClient}>
+        <ProductLoader />
+      </QueryClientProvider>
+    </>
   )
 }
 

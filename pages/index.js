@@ -1,9 +1,10 @@
 import axios from 'axios';
 import currencyFormatter from 'currency-formatter';
-import Head from 'next/head';
 import { useState } from 'react';
-import { Container, FormControl, Spinner, Alert, Row, Col, Card } from 'react-bootstrap';
+import { FormControl, Row, Col, Card } from 'react-bootstrap';
 import { QueryClient, QueryClientProvider, useQuery } from 'react-query';
+import Error from '../components/error'
+import Loader from '../components/loader'
 
 const queryClient = new QueryClient();
 const locale = { locale: 'nl-NL' };
@@ -38,17 +39,13 @@ const ProductLoader = ({ query }) => {
 
   if (isLoading) {
     return (
-      <Spinner animation="border" role="status">
-        <span className="visually-hidden">Loading...</span>
-      </Spinner>
+      <Loader />
     )
   }
 
   if (error) {
     return (
-      <Alert variant="danger">
-        An error has occurred: {error.message}
-      </Alert>
+      <Error message={error.message} />
     )
   }
 
@@ -71,28 +68,22 @@ const Page = () => {
   const [query, setQuery] = useState('');
 
   return (
-    <div>
-      <Head>
-        <title>Optimizely Next.js Sandbox</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <Container>
-        <h1>Products</h1>
-        <Row>
-          <Col xs={4} className="mb-3">
-            <FormControl
-              placeholder="Search"
-              aria-label="Search"
-              value={query}
-              onChange={(evt) => setQuery(evt.target.value)}
-            />
-          </Col>
-        </Row>
-        <QueryClientProvider client={queryClient}>
-          <ProductLoader query={query} />
-        </QueryClientProvider>
-      </Container>
-    </div>
+    <>
+      <h1>Products</h1>
+      <Row>
+        <Col xs={4} className="mb-3">
+          <FormControl
+            placeholder="Search"
+            aria-label="Search"
+            value={query}
+            onChange={(evt) => setQuery(evt.target.value)}
+          />
+        </Col>
+      </Row>
+      <QueryClientProvider client={queryClient}>
+        <ProductLoader query={query} />
+      </QueryClientProvider>
+    </>
   )
 }
 

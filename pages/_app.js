@@ -1,5 +1,10 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
+import Layout from '../components/layout'
 
-const PassthroughComponent = ({ Component, pageProps }) => <Component {...pageProps} />;
+const App = ({ Component, pageProps }) => (
+  <Layout>
+    <Component {...pageProps} />
+  </Layout>
+);
 
-export default PassthroughComponent;
+export default App;
