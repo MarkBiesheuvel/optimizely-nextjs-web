@@ -17,15 +17,15 @@ const Page = ({ data }) => {
   // Page is rendered server-side, so useEffect is used to allow
   //  Optimizely to modify the DOM without creating hydration errors.
   useEffect(() => {
-    const optimizely = window.optimizely || [];
-
     // Manually activate the page to avoid any timing issues
+    const optimizely = window.optimizely || [];
     optimizely.push({
       type: 'page',
       pageName: '21801710869_product_detail_page'
     });
 
     // At this point Optimizely will update the DOM
+    // For example, updating the .col-4 class to .col-3 or .col-2
   });
 
   return (

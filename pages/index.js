@@ -1,7 +1,7 @@
 import axios from 'axios';
 import currencyFormatter from 'currency-formatter';
-import { useState } from 'react';
-import { FormControl, Row, Col, Card } from 'react-bootstrap';
+import { useState, useEffect } from 'react';
+import { FormControl, Row, Col, Card, Toast  } from 'react-bootstrap';
 import { QueryClient, QueryClientProvider, useQuery } from 'react-query';
 import Error from '../components/error';
 import Loader from '../components/loader';
@@ -17,6 +17,7 @@ const searchProducts = async (query) => {
 const ProductCard = ({ product }) => {
   const { id, title, price, description, thumbnail } = product;
 
+  // Simple product overview using react-bootstrap
   return (
     <Card>
       <Card.Img
@@ -34,42 +35,109 @@ const ProductCard = ({ product }) => {
   );
 };
 
-const ProductLoader = ({ query }) => {
+const ProductToast = ({ product }) => {
+  const { id, title, price, description } = product;
+
+  // Simple product overview using react-bootstrap
+  return (
+    <Toast animation={false}>
+      <Toast.Header closeButton={false}>
+        <strong className='me-auto'>{title}</strong>
+        <small>{currencyFormatter.format(price, locale)}</small>
+      </Toast.Header>
+      <Toast.Body>{description}</Toast.Body>
+    </Toast>
+  );
+};
+
+const getProductComponentForVariation = (variation) => {
+  if (variation == 'ProductCard') {
+    return ProductCard;
+  } else if (variation == 'ProductToast') {
+    return ProductToast;
+  } else {
+    throw 'Invalid variation';
+  }
+}
+
+const ProductLoader = ({ query, variation }) => {
+  // Retrieve products from using react-query
   const { isLoading, error, data } = useQuery(['products', query], () => searchProducts(query));
 
+  // If the API request is still loading, show a loading screen
   if (isLoading) {
     return (
       <Loader />
     );
   }
 
+  // If the API request gave an error, show error message
   if (error) {
     return (
       <Error message={error.message} />
     );
   }
 
+  // If the variation state variable is still empty, show a splash screen
+  if (!variation) {
+    return (
+      <Loader />
+    );
+  }
+
+  // Select the product component depending on the experiment variation
+  const ProductComponent = getProductComponentForVariation(variation);
+
+  // Render all products
   if (data) {
     return (
       <Row>
         {data.map((product) => (
           <Col key={product.id} xs={4} className='mb-3'>
-            <ProductCard product={product} />
+            <ProductComponent product={product} />
           </Col>
         ))}
       </Row>
     );
   } else {
-    return 'No products found';
+    return (
+      <p>No products found</p>
+    );
   }
 };
 
 const Page = () => {
+  // Create a state variable for query string.
+  // Use the setQuery function anytime the user updates the query string.
   const [query, setQuery] = useState('');
 
+  // Create a state variable for the Optimizely variation.
+  // Default is set to null, so no elements are rendered at first.
+  // Note: create a unique state variable per experiment.
+  const [variation, setVariation] = useState(null);
+  // Only run the Optimizely code on the client side (in the browser)
+  useEffect(() => {
+    // Expose the setVariation function to window, so Optimizely can call it.
+    window.setOptimizelyVariation = setVariation;
+
+    // Manually activate the page to avoid any timing issues
+    const optimizely = window.optimizely || [];
+    optimizely.push({
+      type: 'page',
+      pageName: '21801710869_home_page'
+    });
+
+    // At this point Optimizely will calls the setOptimizelyVariation function
+    // This updates the state variable, which causes React to rerender the page
+    // For example:
+    //    window.setOptimizelyVariation('ProductToast');
+  }, []);
+
+  // Render page
   return (
     <>
       <h1>Products</h1>
+      <p>You are looking at variation: {variation}</p>
       <Row>
         <Col xs={4} className='mb-3'>
           <FormControl
@@ -81,7 +149,7 @@ const Page = () => {
         </Col>
       </Row>
       <QueryClientProvider client={queryClient}>
-        <ProductLoader query={query} />
+        <ProductLoader query={query} variation={variation} />
       </QueryClientProvider>
     </>
   );
