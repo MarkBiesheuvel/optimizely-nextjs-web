@@ -1,15 +1,7 @@
 import axios from 'axios';
-import currencyFormatter from 'currency-formatter';
 import { useEffect  } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
 import { Row, Col, Image } from 'react-bootstrap';
-import { QueryClient, QueryClientProvider, useQuery } from 'react-query';
-import Error from '../../components/error'
-import Loader from '../../components/loader'
-
-const queryClient = new QueryClient();
-const locale = { locale: 'nl-NL' };
 
 const getServerSideProps = async (context) => {
   const id = context.params.id;
@@ -20,14 +12,20 @@ const getServerSideProps = async (context) => {
 };
 
 const Page = ({ data }) => {
-  const { title, price, description, images } = data;
+  const { title, description, images } = data;
 
+  // Page is rendered server-side, so useEffect is used to allow
+  //  Optimizely to modify the DOM without creating hydration errors.
   useEffect(() => {
     const optimizely = window.optimizely || [];
+
+    // Manually activate the page to avoid any timing issues
     optimizely.push({
       type: 'page',
-      pageName: '21514690867_localhost'
+      pageName: '21801710869_product_detail_page'
     });
+
+    // At this point Optimizely will update the DOM
   });
 
   return (
@@ -40,12 +38,12 @@ const Page = ({ data }) => {
            <Image
              src={image}
              fluid={true}
-             alt=""
+             alt=''
            />
          </Col>
         ))}
       </Row>
-      <Link href="/">Back to home</Link>
+      <Link href='/'>Back to home</Link>
     </>
   )
 };

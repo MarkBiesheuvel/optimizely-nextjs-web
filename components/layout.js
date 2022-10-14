@@ -4,10 +4,10 @@ import { Container } from 'react-bootstrap';
 
 const Layout = ({ children }) => (
   <>
-    <Script src="https://cdn.optimizely.com/js/21514690867.js" strategy="beforeInteractive" />
+    <Script src='https://cdn.optimizely.com/js/21801710869.js' strategy='beforeInteractive' />
     <Head>
       <title>Optimizely Next.js Sandbox</title>
-      <link rel="icon" href="/favicon.ico" />
+      <link rel='icon' href='/favicon.ico' />
     </Head>
     <Container>
       {children}
