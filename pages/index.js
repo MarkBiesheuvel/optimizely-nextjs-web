@@ -42,7 +42,9 @@ const ProductToast = ({ product }) => {
   return (
     <Toast animation={false}>
       <Toast.Header closeButton={false}>
-        <strong className='me-auto'>{title}</strong>
+        <strong className='me-auto'>
+          <a href={`/product/${id}`} className='text-reset text-decoration-none'>{title}</a>
+        </strong>
         <small>{currencyFormatter.format(price, locale)}</small>
       </Toast.Header>
       <Toast.Body>{description}</Toast.Body>
@@ -93,7 +95,7 @@ const ProductLoader = ({ query, variation }) => {
     return (
       <Row>
         {data.map((product) => (
-          <Col key={product.id} xs={4} className='mb-3'>
+          <Col key={product.id} xs={12} sm={6} md={4} lg={3} className='mb-3'>
             <ProductComponent product={product} />
           </Col>
         ))}
@@ -137,11 +139,18 @@ const Page = () => {
   return (
     <>
       <h1>Products</h1>
-      <p>You are looking at variation: {variation}</p>
       <Row>
-        <Col xs={4} className='mb-3'>
+        <Col xs={12} sm={6} className='mb-5'>
+          <h4>Description</h4>
+          <p>
+            This page is client-side rendered using Next.js and React.
+            A React State hook and Effect hook are used to interact between Optimizely and React.
+          </p>
+        </Col>
+        <Col xs={12} sm={6} className='mb-5'>
+          <h4>Search</h4>
           <FormControl
-            placeholder='Search'
+            placeholder='Enter your search query...'
             aria-label='Search'
             value={query}
             onChange={(evt) => setQuery(evt.target.value)}
