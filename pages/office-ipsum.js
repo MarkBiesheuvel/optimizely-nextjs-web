@@ -1,4 +1,4 @@
-const Page = ({optimizely, user}) => {
+const Page = () => {
   return (
     <>
       <h1>Office ipsum</h1>
